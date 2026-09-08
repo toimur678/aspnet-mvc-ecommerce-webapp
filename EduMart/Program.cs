@@ -12,7 +12,8 @@ builder.Services.AddControllersWithViews();
 
 // Register the DbContext
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")
+        ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found. Set it with: dotnet user-secrets set \"ConnectionStrings:DefaultConnection\" \"...\"")));
 
 // Register Identity services
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
