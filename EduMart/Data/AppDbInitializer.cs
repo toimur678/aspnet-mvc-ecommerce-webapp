@@ -7,6 +7,22 @@ namespace EduMart.Data
 {
     public class AppDbInitializer
     {
+        // Sample learners seeded with the User role. All share the password below.
+        // Emails use example.com so they can never reach a real inbox.
+        public const string SampleUserPassword = "User@1234";
+
+        private static readonly (string FullName, string Email)[] SampleUsers =
+        {
+            ("Leila Haddad", "leila.haddad@example.com"),
+            ("Marco Bianchi", "marco.bianchi@example.com"),
+            ("Aisha Bello", "aisha.bello@example.com"),
+            ("Ethan Clarke", "ethan.clarke@example.com"),
+            ("Sofia Petrova", "sofia.petrova@example.com"),
+            ("Kenji Watanabe", "kenji.watanabe@example.com"),
+            ("Nadia Rahman", "nadia.rahman@example.com"),
+            ("Oliver Grant", "oliver.grant@example.com"),
+        };
+
         public static void Seed(IApplicationBuilder applicationBuilder)
         {
             using (var serviceScope = applicationBuilder.ApplicationServices.CreateScope())
@@ -57,6 +73,7 @@ namespace EduMart.Data
 
                 // Users
                 var userManager = serviceScope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+                var logger = serviceScope.ServiceProvider.GetRequiredService<ILogger<AppDbInitializer>>();
                 string adminUserEmail = "admin@gmail.com";
 
                 var adminUser = await userManager.FindByEmailAsync(adminUserEmail);
@@ -69,29 +86,38 @@ namespace EduMart.Data
                         Email = adminUserEmail,
                         EmailConfirmed = true
                     };
-                    var result = await userManager.CreateAsync(newAdminUser, "admin@1234");
+                    // Password must satisfy the default Identity policy (uppercase, lowercase, digit, symbol)
+                    var result = await userManager.CreateAsync(newAdminUser, "Admin@1234");
                     if (result.Succeeded)
                     {
                         await userManager.AddToRoleAsync(newAdminUser, UserRoles.Admin);
                     }
+                    else
+                    {
+                        logger.LogError("Seeding {Email} failed: {Errors}", adminUserEmail, string.Join("; ", result.Errors.Select(e => e.Description)));
+                    }
                 }
 
-                string appUserEmail = "user@gmail.com";
-
-                var appUser = await userManager.FindByEmailAsync(appUserEmail);
-                if (appUser == null)
+                // Sample learners (UserName = email, as the Register action does)
+                foreach (var (fullName, email) in SampleUsers)
                 {
+                    if (await userManager.FindByEmailAsync(email) != null) continue;
+
                     var newAppUser = new ApplicationUser()
                     {
-                        FullName = "Application User",
-                        UserName = "app-user",
-                        Email = appUserEmail,
+                        FullName = fullName,
+                        UserName = email,
+                        Email = email,
                         EmailConfirmed = true
                     };
-                    var result = await userManager.CreateAsync(newAppUser, "user@1234");
+                    var result = await userManager.CreateAsync(newAppUser, SampleUserPassword);
                     if (result.Succeeded)
                     {
                         await userManager.AddToRoleAsync(newAppUser, UserRoles.User);
+                    }
+                    else
+                    {
+                        logger.LogError("Seeding {Email} failed: {Errors}", email, string.Join("; ", result.Errors.Select(e => e.Description)));
                     }
                 }
             }
