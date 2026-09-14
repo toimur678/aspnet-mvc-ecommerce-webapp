@@ -2,9 +2,9 @@
 
 @if (Model > 0)
 {
-    <li class="nav-item">
-        <a class="nav-link text-white" asp-controller="Orders" asp-action="ShoppingCart">
-            <i class="bi bi-cart4"></i> @Model
+    <li>
+        <a class="bar__link" asp-controller="Orders" asp-action="ShoppingCart" aria-label="Cart, @Model @(Model == 1 ? "item" : "items")">
+            Cart <span class="count num">@Model</span>
         </a>
     </li>
 }

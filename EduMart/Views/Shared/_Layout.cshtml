@@ -4,67 +4,91 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - EduMart</title>
-    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.8.1/font/bootstrap-icons.min.css" rel="stylesheet">
+    <meta name="description" content="EduMart sells short courses in technology, cooking, business, health and languages, each with a start date, an end date and one price." />
+    <script>document.documentElement.classList.add('js');</script>
+    <link rel="preconnect" href="https://api.fontshare.com" crossorigin>
+    <link href="https://api.fontshare.com/v2/css?f[]=chillax@500,600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
-
 </head>
 <body>
-    <header>
-        <nav class="navbar navbar-expand-sm navbar-light bg-primary border-bottom box-shadow mb-4">
-            <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Skills" asp-action="Index">
-                    <i class="bi bi-shop"></i> <b>EduMart</b>
-                </a>
-                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Skills" asp-action="Index"><i class="bi bi-journal-bookmark-fill"></i> Skills</a>
+    @{
+        var controller = ViewContext.RouteData.Values["controller"]?.ToString();
+        var searchValue = Context.Request.HasFormContentType ? Context.Request.Form["searchString"].ToString() : Context.Request.Query["searchString"].ToString();
+    }
+    <a class="skip-link" href="#main">Skip to content</a>
+    <header class="bar" data-bar>
+        <div class="container bar__inner">
+            <a class="wordmark" asp-area="" asp-controller="Skills" asp-action="Index" aria-label="EduMart, all skills">EduMart</a>
+            <button class="bar__toggle" type="button" aria-expanded="false" aria-controls="bar-panel" data-bar-toggle>
+                Menu
+            </button>
+            <div class="bar__panel" id="bar-panel">
+                <nav class="bar__nav" aria-label="Main">
+                    <ul class="bar__list">
+                        <li>
+                            <a class="bar__link" asp-area="" asp-controller="Skills" asp-action="Index" aria-current="@(controller == "Skills" ? "page" : null)">Skills</a>
                         </li>
 
                         @if (User.Identity.IsAuthenticated && User.IsInRole("Admin")){
-                            <li class="nav-item dropdown">
-                                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                    <i class="bi bi-gear-fill"></i> Management
-                                </a>
-                                <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                                    <a class="dropdown-item" asp-controller="Platforms" asp-action="Index"><i class="bi bi-play-btn-fill"></i> Platforms</a>
-                                    <a class="dropdown-item" asp-controller="SkillOrganizers" asp-action="Index"><i class="bi bi-person-workspace"></i> Agencies</a>
-                                    <a class="dropdown-item" asp-controller="Mentors" asp-action="Index"><i class="bi bi-person-circle"></i> Mentors</a>
-                                </div>
+                            <li>
+                                <details class="menu" data-menu>
+                                    <summary class="bar__link" id="navbarDropdown" aria-current="@(controller is "Platforms" or "SkillOrganizers" or "Mentors" ? "page" : null)">
+                                        Management
+                                    </summary>
+                                    <div class="menu__list" aria-labelledby="navbarDropdown">
+                                        <a class="menu__item" asp-controller="Platforms" asp-action="Index">Platforms</a>
+                                        <a class="menu__item" asp-controller="SkillOrganizers" asp-action="Index">Agencies</a>
+                                        <a class="menu__item" asp-controller="Mentors" asp-action="Index">Mentors</a>
+                                    </div>
+                                </details>
                             </li>
                         }
-
-                        
                     </ul>
+                </nav>
 
-                    <form class="form-inline my-2 my-lg-0" asp-controller="Skills" asp-action="Filter" style="padding-right: 25px;">
-                        <input name="searchString" type="text" class="form-control" placeholder="Search for a skill..." aria-label="Recipient's username" aria-describedby="button-addon2">
-                        <button class="btn btn-success my-2 my-sm-0" type="submit"><i class="bi bi-search"></i></button>
-                    </form>
-                    <ul class="navbar-nav">
-                        @await Component.InvokeAsync("ShoppingCartSummary")
-                    </ul>
+                <form class="search" role="search" asp-controller="Skills" asp-action="Filter">
+                    <label class="visually-hidden" for="searchString">Search skills</label>
+                    <input id="searchString" name="searchString" type="search" placeholder="Search for a skill…" value="@searchValue" autocomplete="off">
+                    <button class="search__btn" type="submit">Search</button>
+                </form>
+                <ul class="bar__list">
+                    @await Component.InvokeAsync("ShoppingCartSummary")
+                </ul>
 
-                    <partial name="_Identity.cshtml" />
-                   
-                </div>
+                <partial name="_Identity.cshtml" />
             </div>
-        </nav>
+        </div>
     </header>
-    <div class="container-fluid">
-        <main role="main" class="pb-3">
-            @RenderBody()
-        </main>
-    </div>
 
-    
+    <main id="main" role="main" class="page container">
+        @RenderBody()
+    </main>
+
+    <footer class="colophon">
+        <div class="container">
+            <p>EduMart, a sample store for short courses.</p>
+            <p data-credits>
+                Course photographs from Wikimedia Commons:
+                <a href="https://commons.wikimedia.org/wiki/File:Backlit_keyboard.jpg">Colin</a> (CC BY-SA 4.0),
+                <a href="https://commons.wikimedia.org/wiki/File:Raspberry_Pi_4_Model_B_-_Side.jpg">Laserlicht</a> (CC BY-SA 4.0),
+                <a href="https://commons.wikimedia.org/wiki/File:Soldering_a_0805.jpg">Aisart</a> (CC BY-SA 3.0),
+                <a href="https://commons.wikimedia.org/wiki/File:Kneading_bread_by_hand.jpg">Anna.Massini</a> (CC BY 4.0),
+                <a href="https://commons.wikimedia.org/wiki/File:Steelport_6-Inch_Chef_Knife_(2026)-104A6580.jpg">Frank Schulenburg</a> (CC BY-SA 4.0),
+                <a href="https://commons.wikimedia.org/wiki/File:Making_of_chinese_noodles_5166105.jpg">Ermell</a> (CC0),
+                <a href="https://commons.wikimedia.org/wiki/File:Texas_Instruments_Longines_Symphonette_Calculator_1st_version.jpg">Mister rf</a> (CC BY-SA 4.0),
+                <a href="https://commons.wikimedia.org/wiki/File:Inside_a_Leather_Workshop.jpg">AmiraAdel93</a> (CC BY-SA 4.0),
+                <a href="https://commons.wikimedia.org/wiki/File:Cowork_Videmonte.jpg">Hipersyl</a> (CC BY-SA 4.0),
+                <a href="https://commons.wikimedia.org/wiki/File:Naam_Yoga_LA_Class.jpg">Drmirshak</a> (CC BY-SA 3.0),
+                <a href="https://commons.wikimedia.org/wiki/File:Human_running_gait_-_terminal_swing_to_heel_strike_(runner_with_Asics_Metaspeed_Edge_Paris_-_2024_Ljubljana_Marathon).jpg">Petar Milošević</a> (CC BY-SA 4.0),
+                <a href="https://commons.wikimedia.org/wiki/File:Colorful_pile_of_dumbbells_at_the_gym.jpg">Ser Amantio di Nicolao</a> (CC BY-SA 4.0),
+                <a href="https://commons.wikimedia.org/wiki/File:Gyedong-gil_street_with_climbing_plants_at_golden_hour_in_Seoul_South_Korea.jpg">Basile Morin</a> (CC BY-SA 4.0),
+                <a href="https://commons.wikimedia.org/wiki/File:Paris_-_Rooftops_in_Paris_-_3052.jpg">Jorge Royan</a> (CC BY-SA 3.0),
+                <a href="https://commons.wikimedia.org/wiki/File:Omotesando_Avenue_at_sunset_from_pedestrian_bridge,_Jingumae,_Shibuya,_Tokyo.jpg">gog.creator</a> (CC BY 4.0).
+                Platform marks from Simple Icons.
+            </p>
+        </div>
+    </footer>
 
     <script src="~/js/site.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
