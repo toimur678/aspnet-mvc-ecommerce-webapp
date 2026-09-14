@@ -62,6 +62,8 @@ using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
     await AppDbInitializer.SeedUsersAndRolesAsync(app);
+    // Catalogue and sample orders; each table is only seeded when empty
+    AppDbInitializer.Seed(app);
 }
 
 app.MapControllerRoute(
