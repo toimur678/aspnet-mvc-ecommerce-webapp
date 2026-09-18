@@ -2,98 +2,105 @@
 
 @{
     ViewData["Title"] = "List of Skills";
+    var now = DateTime.Now;
+    var courses = Model.ToList();
+    var openNow = courses.Count(s => now >= s.StartDate && now <= s.EndDate);
+    var upcoming = courses.Count(s => now < s.StartDate);
+    var query = Context.Request.HasFormContentType ? Context.Request.Form["searchString"].ToString() : Context.Request.Query["searchString"].ToString();
+    var isSearch = !string.IsNullOrWhiteSpace(query);
 }
 
-<style>
-    .picture {
-        width: 250px;
-        height: 250px;
-        object-fit: cover;
-    }
+<header class="page-head">
+    <div class="page-head__text">
+        @if (isSearch)
+        {
+            <h1>Results for “@query”</h1>
+            <p class="lead">
+                <span class="num">@courses.Count</span> @(courses.Count == 1 ? "course matches" : "courses match").
+                @if (courses.Any())
+                {
+                    <a asp-action="Index">Show all skills</a>
+                }
+            </p>
+        }
+        else
+        {
+            <h1>Skills</h1>
+            <p class="lead"><span class="num">@courses.Count</span> short courses. <span class="num">@openNow</span> open now, <span class="num">@upcoming</span> starting soon.</p>
+        }
+    </div>
+    <div class="page-head__actions">
+        @* Partial View *@
+        @await Html.PartialAsync("_CreateItem", "Skills")
+    </div>
+</header>
 
-    .card-body {
-        height: 300px; /* Fixed height for the card body */
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-    }
-
-    .card-text.skill-description {
-        height: 100px; /* Fixed height for description */
-        overflow-y: auto; /* Add scrolling if content exceeds the height */
-        word-break: break-word; /* Ensure long words wrap properly */
-        padding: 5px; /* Add some spacing for better readability */
-        background-color: #f9f9f9; /* Optional: Add a subtle background color */
-    }
-</style>
-
-<div class="row">
-    @foreach (var item in Model)
-    {
-        <div class="col-md-4 col-xs-6 border-secondary mb-3">
-            <div class="card mb-3" style="max-width: 540px;">
-                <div class="row g-0">
-                    <div class="col-md-12">
-                        <div class="card-header text-white bg-primary">
-                            <h5 class="card-title">
-                                @item.SkillName
-                                @if (User.Identity.IsAuthenticated && User.IsInRole("Admin"))
-                                {
-                                    <a class="text-white float-right" asp-action="Edit" asp-route-id="@item.Id"><i class="bi bi-pencil-square"></i>
-
-                                    </a>
-                                }
-                            </h5>
-                        </div>
+@if (!courses.Any())
+{
+    <div class="empty">
+        <h2>No courses match “@query”</h2>
+        <p>Search looks in course names and descriptions. Try a shorter word.</p>
+        <a class="btn btn--quiet" asp-action="Index">Show all skills</a>
+    </div>
+}
+else
+{
+    <ul class="catalogue">
+        @foreach (var item in courses)
+        {
+            var expired = now > item.EndDate;
+            <li class="course@(expired ? " course--expired" : "")">
+                <a class="course__media" asp-action="Details" asp-route-id="@item.Id" tabindex="-1" aria-hidden="true">
+                    <img src="@item.ImageURL" alt="" width="640" height="480" loading="lazy">
+                </a>
+                <div class="course__body">
+                    <div class="course__head">
+                        <h2 class="course__title">
+                            <a asp-action="Details" asp-route-id="@item.Id">@item.SkillName</a>
+                        </h2>
+                        @if (User.Identity.IsAuthenticated && User.IsInRole("Admin"))
+                        {
+                            <a class="course__edit" asp-action="Edit" asp-route-id="@item.Id" aria-label="Edit @item.SkillName">Edit</a>
+                        }
                     </div>
-                    <div class="col-md-6">
-                        <img class="picture" src="@item.ImageURL" alt="@item.SkillName">
-                    </div>
-                    <div class="col-md-6">
-                        <div class="card-body">
-                            <p class="card-text">@item.SkillDescription</p>
-                            <p class="card-text"><b>Platform: </b>@item.Platforms.PlatformName</p>
-                            <p class="card-text"><b>Category: </b>@item.SkillCategory</p>
-                            <p class="card-text"><b>Start Date: </b>@item.StartDate.ToString("dd MMM yy")</p>
-                            <p class="card-text"><b>End Date: </b>@item.EndDate.ToString("dd MMM yy")</p>
-                            <p class="card-text">
-                                <b>Status: </b>
+                    <p class="course__desc">@item.SkillDescription</p>
+                    <dl class="facts facts--grid">
+                        <div><dt>Platform</dt><dd>@item.Platforms.PlatformName</dd></div>
+                        <div><dt>Category</dt><dd>@item.SkillCategory</dd></div>
+                        <div><dt>Start date</dt><dd class="num">@item.StartDate.ToString("dd MMM yy")</dd></div>
+                        <div><dt>End date</dt><dd class="num">@item.EndDate.ToString("dd MMM yy")</dd></div>
+                        <div class="facts__wide">
+                            <dt>Status</dt>
+                            <dd>
                                 @if (DateTime.Now >= item.StartDate && DateTime.Now <= item.EndDate)
                                 {
-                                    <span class="badge bg-success text-white">COURSE AVAILABLE</span>
+                                    <span class="status">Course available</span>
                                 }
                                 else if (DateTime.Now > item.EndDate)
                                 {
-                                    <span class="badge bg-danger text-white">COURSE EXPIRED</span>
+                                    <span class="status status--expired">Course expired</span>
                                 }
                                 else
                                 {
-                                    <span class="badge bg-primary text-white">UPCOMING COURSE</span>
+                                    <span class="status status--upcoming">Upcoming course</span>
                                 }
-                            </p>
+                            </dd>
                         </div>
-                    </div>
-                    <div class="col-md-12">
-                        <div class="card-footer">
-                            <p class="card-text">
-                                <a class="btn btn-outline-primary float-right" asp-action="Details" asp-route-id="@item.Id">
-                                    <i class="bi bi-eye-fill"></i> Show Details
-                                </a>
-                                <a class="btn btn-success text-white @((DateTime.Now > item.EndDate) ? "disabled" : "")"
-                                   asp-controller="Orders"
-                                   asp-action="AddItemToShoppingCart"
-                                   asp-route-id="@item.Id">
-                                    <i class="bi bi-cart-plus" asp-controller="Orders" asp-action="AddItemToShoppingCart" asp-route-id="@item.Id"></i> Add to Cart (Price: @item.Price.ToString("c"))
-                                </a>
-                            </p>
-                        </div>
+                    </dl>
+                    <div class="course__buy">
+                        <span class="price">@item.Price.ToString("c")</span>
+                        <a class="course__more" asp-action="Details" asp-route-id="@item.Id">Show Details</a>
+                        <a class="btn @((DateTime.Now > item.EndDate) ? "disabled" : "")"
+                           asp-controller="Orders"
+                           asp-action="AddItemToShoppingCart"
+                           asp-route-id="@item.Id"
+                           aria-disabled="@(expired ? "true" : null)"
+                           tabindex="@(expired ? "-1" : null)">
+                            Add to Cart
+                        </a>
                     </div>
                 </div>
-            </div>
-        </div>
-    }
-</div>
-
-@* Partial View *@
-
-@await Html.PartialAsync("_CreateItem", "Skills")
+            </li>
+        }
+    </ul>
+}
