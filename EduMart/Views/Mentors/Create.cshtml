@@ -4,53 +4,42 @@
     ViewData["Title"] = "Add new mentor";
 }
 
-<style>
-    .profile-picture {
-        width: 150px;
-        height: 150px;
-        object-fit: cover;
-        border-radius: 50%;
-        border: 2px solid #ddd;
-    }
+<header class="page-head">
+    <div class="page-head__text">
+        <h1>Add a New Mentor</h1>
+    </div>
+</header>
 
-</style>
-<div class="row text">
-    <div class="col-md-8 offset-2">
-        <p>
-            <h1>Add a New Mentor</h1>
-        </p>
-        <div class="row">
-            <div class="col-md-8 offset-2">
-                <form asp-action="Create" method="post">
-                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+<div class="sheet sheet--narrow">
+    <form asp-action="Create" method="post" class="form">
+        <div asp-validation-summary="ModelOnly" class="form__summary"></div>
 
-                    <div class="form-group text-center">
-                        <img id="ProfilePicturePreview" class="profile-picture" />
-                    </div>
-                    <div class="form-group">
-                        <label asp-for="ProfilePictureURL" class="control-label"></label>
-                        <input asp-for="ProfilePictureURL" class="form-control" />
-                        <span asp-validation-for="ProfilePictureURL" class="text-danger"></span>
-                    </div>
-                    <div class="form-group">
-                        <label asp-for="FullName" class="control-label"></label>
-                        <input asp-for="FullName" class="form-control" />
-                        <span asp-validation-for="FullName" class="text-danger"></span>
-                    </div>
-                    <div class="form-group">
-                        <label asp-for="About" class="control-label"></label>
-                        <input asp-for="About" class="form-control" />
-                        <span asp-validation-for="About" class="text-danger"></span>
-                    </div>
-
-                    <div class="form-group">
-                        <input type="submit" value="Create" class="btn btn-outline-success float-right" />
-                        <a class="btn btn-outline-secondary" asp-action="Index">Show All</a>
-                    </div>
-                </form>
+        <div class="profile">
+            <img id="ProfilePicturePreview" class="profile__image" alt="" width="160" height="160" />
+            <div class="profile__fields">
+                <div class="field">
+                    <label asp-for="ProfilePictureURL"></label>
+                    <input asp-for="ProfilePictureURL" />
+                    <span asp-validation-for="ProfilePictureURL" class="field__error"></span>
+                </div>
+                <div class="field">
+                    <label asp-for="FullName"></label>
+                    <input asp-for="FullName" />
+                    <span asp-validation-for="FullName" class="field__error"></span>
+                </div>
+                <div class="field">
+                    <label asp-for="About"></label>
+                    <input asp-for="About" />
+                    <span asp-validation-for="About" class="field__error"></span>
+                </div>
             </div>
         </div>
-    </div>
+
+        <div class="form__actions">
+            <input type="submit" value="Create" class="btn btn--primary" />
+            <a class="btn btn--quiet" asp-action="Index">Show All</a>
+        </div>
+    </form>
 </div>
 
 @section Scripts {
