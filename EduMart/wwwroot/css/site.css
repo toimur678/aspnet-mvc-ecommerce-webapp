@@ -340,6 +340,12 @@ a:active { color: var(--color-ink); }
 
 .alert { padding: var(--space-sm) var(--space-md); border-radius: var(--radius-stock); background: color-mix(in oklab, var(--color-accent-3) 16%, var(--color-card)); color: var(--color-ink); }
 
+/* Account forms */
+.split { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: var(--space-xl) var(--gap-columns); align-items: start; }
+.split > .page-head__text { padding-top: var(--space-lg); }
+.split > .sheet { max-width: 36rem; }
+@media (max-width: 60rem) { .split { grid-template-columns: minmax(0, 1fr); } .split > .page-head__text { padding-top: 0; } }
+
 /* ---------- Notices (done, denied, not found, error) ---------- */
 .notice { position: relative; display: grid; gap: var(--space-md); justify-items: start; max-width: 40rem; padding: var(--space-xl); border-radius: var(--radius-card); background: var(--grain), var(--fibre), var(--color-card); box-shadow: var(--shadow-sheet); }
 .notice--error h1 { color: var(--color-error); }
