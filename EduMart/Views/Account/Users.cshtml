@@ -4,34 +4,34 @@
     ViewData["Title"] = "List of all users";
 }
 
-<div class="row">
-    <div class="col-md-6 offset-3">
-        <p>
-            <h4>List of all users</h4>
-        </p>
-
-        <table class="table">
-            <thead>
-                <tr class="text-center">
-                    <th>@Html.DisplayNameFor(model => model.FullName)</th>
-                    <th>@Html.DisplayNameFor(model => model.Email)</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var item in Model)
-                {
-                    <tr>
-                        <td class="text-center">
-                            @Html.DisplayFor(modelItem => item.FullName)
-                        </td>
-                        <td class="text-center">
-                            @Html.DisplayFor(modelItem => item.Email)
-                        </td>
-                    </tr>
-                }
-            </tbody>
-
-        </table>
-
+<header class="page-head">
+    <div class="page-head__text">
+        <h1>List of all users</h1>
+        <p class="lead"><span class="num">@Model.Count()</span> accounts.</p>
     </div>
+</header>
+
+<div class="sheet">
+    <table class="table table--rows table--stack">
+        <thead>
+            <tr>
+                <th>@Html.DisplayNameFor(model => model.FullName)</th>
+                <th>@Html.DisplayNameFor(model => model.Email)</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td data-label="@Html.DisplayNameFor(model => model.FullName)" class="table__name">
+                        @Html.DisplayFor(modelItem => item.FullName)
+                    </td>
+                    <td data-label="@Html.DisplayNameFor(model => model.Email)">
+                        @Html.DisplayFor(modelItem => item.Email)
+                    </td>
+                </tr>
+            }
+        </tbody>
+
+    </table>
 </div>

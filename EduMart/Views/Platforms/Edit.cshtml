@@ -4,58 +4,49 @@
     ViewData["Title"] = "Update Platform";
 }
 
-<style>
-    .profile-picture {
-        width: 150px;
-        height: 150px;
-        object-fit: cover;
-        border-radius: 50%;
-        border: 2px solid #ddd;
-    }
-</style>
-<div class="row text">
-    <div class="col-md-8 offset-2">
-        <p>
-            <h1>Update Platform</h1>
-        </p>
-        <div class="row">
-            <div class="col-md-8 offset-2">
-                <form asp-action="Edit" method="post">
-                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+<header class="page-head">
+    <div class="page-head__text">
+        <h1>Update Platform</h1>
+    </div>
+</header>
 
-                    <input type="hidden" asp-for="Id" />
+<div class="sheet sheet--narrow">
+    <form asp-action="Edit" method="post" class="form">
+        <div asp-validation-summary="ModelOnly" class="form__summary"></div>
 
-                    <div class="form-group text-center">
-                        <img id="PlatformLogoPreview" class="profile-picture" />
-                    </div>
-                    <div class="form-group">
-                        <label asp-for="PlatformLogo" class="control-label"></label>
-                        <input asp-for="PlatformLogo" class="form-control" />
-                        <span asp-validation-for="PlatformLogo" class="text-danger"></span>
-                    </div>
-                    <div class="form-group">
-                        <label asp-for="PlatformName" class="control-label"></label>
-                        <input asp-for="PlatformName" class="form-control" />
-                        <span asp-validation-for="PlatformName" class="text-danger"></span>
-                    </div>
-                    <div class="form-group">
-                        <label asp-for="Description" class="control-label"></label>
-                        <input asp-for="Description" class="form-control" />
-                        <span asp-validation-for="Description" class="text-danger"></span>
-                    </div>
+                <input type="hidden" asp-for="Id" />
 
-                    <div class="form-group">
-                        <input type="submit" value="Update" class="btn btn-outline-success float-right" />
-                        <a class="btn btn-outline-secondary" asp-action="Index">Show All</a>
-                    </div>
-                </form>
+        <div class="profile">
+            <img id="PlatformLogoPreview" class="profile__image profile__image--contain" alt="" width="160" height="160" />
+            <div class="profile__fields">
+                <div class="field">
+                    <label asp-for="PlatformLogo"></label>
+                    <input asp-for="PlatformLogo" />
+                    <span asp-validation-for="PlatformLogo" class="field__error"></span>
+                </div>
+                <div class="field">
+                    <label asp-for="PlatformName"></label>
+                    <input asp-for="PlatformName" />
+                    <span asp-validation-for="PlatformName" class="field__error"></span>
+                </div>
+                <div class="field">
+                    <label asp-for="Description"></label>
+                    <input asp-for="Description" />
+                    <span asp-validation-for="Description" class="field__error"></span>
+                </div>
             </div>
         </div>
-    </div>
+
+        <div class="form__actions">
+            <input type="submit" value="Update" class="btn btn--primary" />
+            <a class="btn btn--quiet" asp-action="Index">Show All</a>
+        </div>
+    </form>
 </div>
 
 @section Scripts {
     <script>
+
         $(document).ready(function () {
             var output = document.getElementById('PlatformLogoPreview');
             output.src = $("#PlatformLogo").val();

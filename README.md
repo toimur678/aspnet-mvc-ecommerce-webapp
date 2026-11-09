@@ -17,8 +17,8 @@ EduMart is an ASP.NET MVC e-commerce web application designed to manage and sell
 - **ASP.NET Core MVC**: The application is built using the ASP.NET Core MVC framework.
 - **Entity Framework Core**: Used for database operations and migrations.
 - **Identity Framework**: Handles user authentication and authorization.
-- **Bootstrap**: Used for front-end styling and responsive design.
-- **SQL Server**: The database used to store application data.
+- **CSS**: Custom stylesheet (`wwwroot/css/site.css` with `tokens.css` and `base.css`), no CSS framework.
+- **MySQL**: The database used to store application data (via `MySql.EntityFrameworkCore`).
 - **jQuery**: Used for client-side scripting and AJAX requests.
 
 ## Directory Structure
@@ -38,35 +38,47 @@ toimur678-aspnet-mvc-ecommerce-webapp/
 ## Getting Started
 
 ### Prerequisites
-- .NET 8.0 SDK
-- Visual Studio 2022 or later
-- SQL Server (LocalDB or SQL Express)
+- .NET 10 SDK
+- MySQL 8.4 (e.g. `brew install mysql@8.4 && brew services start mysql@8.4`)
+- EF Core CLI: `dotnet tool install --global dotnet-ef`
+- Any editor: VS Code with C# Dev Kit, Rider, or Visual Studio
 
 ### Installation
 1. **Clone the repository**:
    ```bash
-   git clone https://github.com/your-repo/toimur678-aspnet-mvc-ecommerce-webapp.git
+   git clone https://github.com/toimur678/aspnet-mvc-ecommerce-webapp.git
+   cd aspnet-mvc-ecommerce-webapp/EduMart
    ```
-2. **Open the solution in Visual Studio**:
-   - Open `EduMart.sln` in Visual Studio.
-3. **Configure the database**:
-   - Update the connection string in `appsettings.json` to point to your SQL Server instance.
-   - Run the following commands in the Package Manager Console to apply migrations:
-     ```bash
-     Update-Database
-     ```
-4. **Seed the database**:
-   - The application includes a seed method in `AppDbInitializer.cs` to create initial roles and users. Run the application to seed the database.
+2. **Create the MySQL database and user** (run `mysql -u root`):
+   ```sql
+   CREATE DATABASE edumart CHARACTER SET utf8mb4;
+   CREATE USER 'edumart'@'localhost' IDENTIFIED BY 'Dev_Passw0rd123';
+   GRANT ALL PRIVILEGES ON edumart.* TO 'edumart'@'localhost';
+   ```
+3. **Set the connection string** (stored in user secrets, not in git):
+   ```bash
+   dotnet user-secrets set "ConnectionStrings:DefaultConnection" "Server=localhost;Port=3306;Database=edumart;User Id=edumart;Password=Dev_Passw0rd123;"
+   ```
+4. **Create the schema**:
+   ```bash
+   dotnet ef database update
+   ```
 5. **Run the application**:
-   - Press `F5` in Visual Studio to run the application.
+   ```bash
+   dotnet dev-certs https --trust   # once per machine
+   dotnet watch run --launch-profile https
+   ```
+   Open https://localhost:7215. On first start, `AppDbInitializer.cs` creates the roles and the default users below.
 
 ### Default Users
 - **Admin User**:
   - Email: `admin@gmail.com`
-  - Password: `admin@1234`
-- **Regular User**:
-  - Email: `user@gmail.com`
-  - Password: `user@1234`
+  - Password: `Admin@1234`
+- **Sample learners** (role User, all with password `User@1234`):
+  - `leila.haddad@example.com`, `marco.bianchi@example.com`, `aisha.bello@example.com`, `ethan.clarke@example.com`
+  - `sofia.petrova@example.com`, `kenji.watanabe@example.com`, `nadia.rahman@example.com`, `oliver.grant@example.com`
+
+On first start the seeder also fills an empty catalogue with 5 platforms, 5 agencies, 12 mentors, 15 courses and 10 sample orders. Each table is only seeded when it is empty, and course dates are set relative to the day the seed runs.
 
 ## Usage
 - **Admin Role**: Admins can manage courses, mentors, platforms, and course organizers. They can also view all orders.

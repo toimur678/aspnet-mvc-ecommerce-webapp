@@ -2,98 +2,80 @@
 
 @{
     ViewData["Title"] = "Skills details";
+    var expired = DateTime.Now > Model.EndDate;
 }
 
-<style>
-    .profile-picture {
-        width: 150px;
-        height: 150px;
-        object-fit: cover;
-        border-radius: 50%;
-        border: 2px solid #ddd;
-    }
+<a class="back" asp-action="Index">Back to List</a>
 
-</style>
-
-<div class="row">
-    <div class="col-md-8 offset-2">
-        <div class="card mb-12">
-            <div class="row g-0">
-                <div class="col-md-12">
-                    <div class="card-header text-white bg-primary">
-                        <p class="card-text">
-                            <h5 class="card-title">
-                                @Model.SkillName
-                            </h5>
-                        </p>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <img src="@Model.ImageURL" width="100%" alt="@Model.SkillName">
-                </div>
-                <div class="col-md-8">
-                    <div class="card-body">
-                        <p class="card-text">@Model.SkillDescription</p>
-                        <p class="card-text">
-                            <b>Platforms: </b>
-                            <a asp-controller="Platforms" asp-action="Details" asp-route-id="@Model.PlatformId">
-                                @Model.Platforms.PlatformName
-                            </a>
-                        </p>
-                        <p class="card-text">
-                            <b>SkillOrganizers: </b>
-                            <a asp-controller="SkillOrganizers" asp-action="Details" asp-route-id="@Model.SkillOrganizerID">
-                                @Model.Skill_Organizers.FullName
-                            </a>
-                        </p>
-                        <p class="card-text"><b>Category: </b>@Model.SkillCategory</p>
-                        <p class="card-text"><b>Start Date: </b>@Model.StartDate.ToString("dd MMM yy")</p>
-                        <p class="card-text"><b>End Date: </b>@Model.EndDate.ToString("dd MMM yy")</p>
-                        <p class="card-text ">
-                            <b>Status: </b>
-                            @if (DateTime.Now >= Model.StartDate && DateTime.Now <= Model.EndDate)
-                            {
-                                <span class="badge bg-success text-white">AVAILABLE</span>
-                            }
-                            else if (DateTime.Now > Model.EndDate)
-                            {
-                                <span class="badge bg-danger text-white">EXPIRED</span>
-                            }
-                            else
-                            {
-                                <span class="badge bg-primary text-white">UPCOMING</span>
-                            }
-                        </p>
-                        <p class="card-text">
-                            <b>Mentors: </b>
-                            <hr />
-                            <div class="row">
-                                @foreach (var mentor in Model.Mentors_Skills)
-                                {
-                                    <div class="column text-center">
-                                        <img class="profile-picture" src="@mentor.Mentors.ProfilePictureURL"/>
-                                        <br />
-                                        <a asp-controller="Mentors" asp-action="Details" asp-route-id="@mentor.MentorID">@mentor.Mentors.FullName</a>
-                                    </div>
-                                }
-                            </div>
-                        </p>
-
-                    </div>
-                </div>
-                <div class="col-md-12">
-                    <div class="card-footer">
-                        <p class="card-text">
-                            <a class="btn btn-outline-primary float-right" asp-action="Index">
-                                Back to List
-                            </a>
-                            <a class="btn btn-success text-white  @((DateTime.Now > Model.EndDate) ? "disabled" : "")"
-                               asp-controller="Orders"
-                               asp-action="AddItemToShoppingCart" asp-route-id="@Model.Id"><i class="bi bi-cart-plus"></i> Add to Cart (Price @Model.Price)</a>
-                        </p>
-                    </div>
-                </div>
-            </div>
-        </div>
+<article class="detail">
+    <div class="detail__media">
+        <img src="@Model.ImageURL" alt="@Model.SkillName" width="720" height="720">
     </div>
-</div>
+    <div class="detail__body">
+        <header class="page-head__text">
+            <h1>@Model.SkillName</h1>
+            <p class="lead">@Model.SkillDescription</p>
+        </header>
+
+        <dl class="facts facts--grid facts--three">
+            <div>
+                <dt>Platform</dt>
+                <dd>
+                    <a asp-controller="Platforms" asp-action="Details" asp-route-id="@Model.PlatformId">
+                        @Model.Platforms.PlatformName
+                    </a>
+                </dd>
+            </div>
+            <div>
+                <dt>Agency</dt>
+                <dd>
+                    <a asp-controller="SkillOrganizers" asp-action="Details" asp-route-id="@Model.SkillOrganizerID">
+                        @Model.Skill_Organizers.FullName
+                    </a>
+                </dd>
+            </div>
+            <div><dt>Category</dt><dd>@Model.SkillCategory</dd></div>
+            <div><dt>Start date</dt><dd class="num">@Model.StartDate.ToString("dd MMM yy")</dd></div>
+            <div><dt>End date</dt><dd class="num">@Model.EndDate.ToString("dd MMM yy")</dd></div>
+            <div>
+                <dt>Status</dt>
+                <dd>
+                    @if (DateTime.Now >= Model.StartDate && DateTime.Now <= Model.EndDate)
+                    {
+                        <span class="status">Available</span>
+                    }
+                    else if (DateTime.Now > Model.EndDate)
+                    {
+                        <span class="status status--expired">Expired</span>
+                    }
+                    else
+                    {
+                        <span class="status status--upcoming">Upcoming</span>
+                    }
+                </dd>
+            </div>
+        </dl>
+
+        <div class="detail__buy">
+            <span class="price price--large">@Model.Price.ToString("c")</span>
+            <a class="btn btn--primary @((DateTime.Now > Model.EndDate) ? "disabled" : "")"
+               asp-controller="Orders"
+               asp-action="AddItemToShoppingCart" asp-route-id="@Model.Id"
+               aria-disabled="@(expired ? "true" : null)"
+               tabindex="@(expired ? "-1" : null)">Add to Cart</a>
+        </div>
+
+        <section aria-labelledby="mentors-head">
+            <h2 id="mentors-head">Mentors</h2>
+            <ul class="people">
+                @foreach (var mentor in Model.Mentors_Skills)
+                {
+                    <li>
+                        <img class="avatar" src="@mentor.Mentors.ProfilePictureURL" alt="" width="48" height="48" />
+                        <a asp-controller="Mentors" asp-action="Details" asp-route-id="@mentor.MentorID">@mentor.Mentors.FullName</a>
+                    </li>
+                }
+            </ul>
+        </section>
+    </div>
+</article>

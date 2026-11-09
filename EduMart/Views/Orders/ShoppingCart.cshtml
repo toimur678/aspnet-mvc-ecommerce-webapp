@@ -3,73 +3,79 @@
 
 @{
     ViewData["Title"] = "Shopping cart summary";
+    var cartItems = Model.ShoppingCart.ShoppingCartItems;
 }
 
-<div class="row">
-    <div class="col-md-8 offset-2">
-        <div class="text-center">
-            <h2>You shopping cart summary</h2>
-        </div>
+<header class="page-head">
+    <div class="page-head__text">
+        <h1>Your shopping cart summary</h1>
+    </div>
+</header>
 
-        <table class="table">
+@if (!cartItems.Any())
+{
+    <div class="empty">
+        <h2>Your cart is empty</h2>
+        <p>Add a course from the list and it will wait here until you pay.</p>
+        <a class="btn btn--quiet" asp-controller="Skills" asp-action="Index">Browse skills</a>
+    </div>
+}
+else
+{
+    <div class="sheet">
+        <table class="table table--stack">
             <thead>
                 <tr>
-                    <th>Selected amount</th>
                     <th>Skill</th>
-                    <th>Price</th>
-                    <th>Subtotal</th>
-                    <th></th>
+                    <th>Selected amount</th>
+                    <th class="num">Price</th>
+                    <th class="num">Subtotal</th>
                 </tr>
             </thead>
             <tbody>
-                @foreach (var item in Model.ShoppingCart.ShoppingCartItems)
+                @foreach (var item in cartItems)
                 {
                     <tr>
-                        <td class="align-middle">@item.Amount</td>
-                        <td class="align-middle">@item.Skills.SkillName</td>
-                        <td class="align-middle">@item.Skills.Price.ToString("c")</td>
-                        <td class="align-middle">@((item.Amount * item.Skills.Price).ToString("c"))</td>
-                        <td class="align-middle">
-                            <a class="text-danger" asp-controller="Orders" asp-action="RemoveItemFromShoppingCart"
-                               asp-route-id="@item.Skills.Id">
-                                <i class="bi bi-cart-dash"></i>
-                            </a>
-                            |
-                            <a class="text-success" asp-controller="Orders" asp-action="AddItemToShoppingCart"
-                               asp-route-id="@item.Skills.Id">
-                                <i class="bi bi-cart-plus"></i>
-                            </a>
+                        <td data-label="Skill" class="table__name">@item.Skills.SkillName</td>
+                        <td data-label="Selected amount">
+                            <span class="qty">
+                                <a class="qty__btn" asp-controller="Orders" asp-action="RemoveItemFromShoppingCart"
+                                   asp-route-id="@item.Skills.Id" aria-label="Remove one @item.Skills.SkillName">
+                                    <span aria-hidden="true">&minus;</span>
+                                </a>
+                                <span class="num">@item.Amount</span>
+                                <a class="qty__btn" asp-controller="Orders" asp-action="AddItemToShoppingCart"
+                                   asp-route-id="@item.Skills.Id" aria-label="Add one more @item.Skills.SkillName">
+                                    <span aria-hidden="true">+</span>
+                                </a>
+                            </span>
                         </td>
+                        <td data-label="Price" class="num">@item.Skills.Price.ToString("c")</td>
+                        <td data-label="Subtotal" class="num">@((item.Amount * item.Skills.Price).ToString("c"))</td>
                     </tr>
                 }
             </tbody>
             <tfoot>
-                <tr>
-                    <td colspan="2"></td>
-                    <td><b>Total:</b></td>
-                    <td>
+                <tr class="total">
+                    <td colspan="3">Total</td>
+                    <td class="num">
                         @Model.ShoppingCartTotal.ToString("c")
                     </td>
-                    <td></td>
                 </tr>
             </tfoot>
         </table>
 
-        <div class="text-right">
-            <div class="btn-group">
-                @*<a class="btn btn-outline-primary" asp-action="CompleteOrder">
-                        Complete order
-                    </a>*@
-                <div id="paypal-btn"></div>
-                <span style="padding:5px"></span>
-                <a class="btn btn-outline-success" asp-controller="Movies" asp-action="Index">
-                    Add more items
-                </a>
-            </div>
+        <div class="checkout">
+            @*<a class="btn btn-outline-primary" asp-action="CompleteOrder">
+                    Complete order
+                </a>*@
+            <a class="btn btn--quiet" asp-controller="Skills" asp-action="Index">
+                Add more items
+            </a>
+            <div id="paypal-btn"></div>
         </div>
-
     </div>
-</div>
+}
 
 @section Scripts {
 
@@ -79,7 +85,8 @@
 
         let _total = @Html.Raw(Model.ShoppingCartTotal);
 
-        paypal.Button.render({
+        // The PayPal button only renders when the cart has items (the empty state has no #paypal-btn)
+        if (document.getElementById('paypal-btn')) paypal.Button.render({
             //Configure environment
             env: 'sandbox',
             client: {
@@ -89,7 +96,7 @@
             //Customize button
             locale: 'en_US',
             style: {
-                size: 'small',
+                size: 'responsive',
                 color: 'gold',
                 shape: 'pill'
             },

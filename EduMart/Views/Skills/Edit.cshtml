@@ -6,91 +6,78 @@
     ViewData["Title"] = "Update Skill";
 }
 
-<div class="row">
-    <div class="col-md-8 offset-2">
-        <p>
-            <h4>Update Skill</h4>
-        </p>
-
-        <div class="row">
-            <div class="col-md-8 offset-2">
-                <form asp-action="Edit">
-                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label asp-for="SkillName" class="control-label"></label>
-                                <input asp-for="SkillName" class="form-control" />
-                                <span asp-validation-for="SkillName" class="text-danger"></span>
-                            </div>
-                            <div class="form-group">
-                                <label asp-for="StartDate" class="control-label"></label>
-                                <input asp-for="StartDate" type="date" class="form-control" value="@Model.StartDate.ToString("yyyy-MM-dd")" />
-                                <span asp-validation-for="StartDate" class="text-danger"></span>
-                            </div>
-                            <div class="form-group">
-                                <label asp-for="EndDate" class="control-label"></label>
-                                <input asp-for="EndDate" type="date" class="form-control" value="@Model.EndDate.ToString("yyyy-MM-dd")" />
-                                <span asp-validation-for="EndDate" class="text-danger"></span>
-                            </div>
-                            <div class="form-group">
-                                <label asp-for="Price" class="control-label"></label>
-                                <input asp-for="Price" type="number" class="form-control" />
-                                <span asp-validation-for="Price" class="text-danger"></span>
-                            </div>
-                            <div class="form-group">
-                                <label asp-for="ImageURL" class="control-label"></label>
-                                <input asp-for="ImageURL" class="form-control" />
-                                <span asp-validation-for="ImageURL" class="text-danger"></span>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label asp-for="PlatformId" class="control-label"></label>
-                                <select asp-for="PlatformId" class="form-control" asp-items="ViewBag.Platforms"></select>
-                                <span asp-validation-for="PlatformId" class="text-danger"></span>
-                            </div>
-                            <div class="form-group">
-                                <label asp-for="SkillCategory" class="control-label"></label>
-                                <select asp-for="SkillCategory" class="form-control" asp-items="Html.GetEnumSelectList<Skill_Category>()"></select>
-                                <span asp-validation-for="SkillCategory" class="text-danger"></span>
-                            </div>
-                            <div class="form-group">
-                                <label asp-for="SkillOrganizerID" class="control-label"></label>
-                                <select asp-for="SkillOrganizerID" class="form-control" asp-items="ViewBag.SkillOrganizers"></select>
-                                <span asp-validation-for="SkillOrganizerID" class="text-danger"></span>
-                            </div>
-                            <div class="form-group">
-                                <label asp-for="MentorIds" class="control-label"></label>
-                                <select asp-for="MentorIds" class="form-control" asp-items="ViewBag.Mentors" multiple></select>
-                                <span asp-validation-for="MentorIds" class="text-danger"></span>
-                            </div>
-                        </div>
-                        <div class="col-md-12">
-                            <div class="form-group">
-                                <label asp-for="Description" class="control-label"></label>
-                                <textarea asp-for="Description" class="form-control"></textarea>
-                                <span asp-validation-for="Description" class="text-danger"></span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="col-md-4 offset-4 text-center">
-                        <img width="100%" id="ImageUrlPreview" />
-                    </div>
-
-                    <div class="form-group">
-                        <input type="submit" value="Update" class="btn btn-success float-right" />
-                        <a class="btn btn-secondary" asp-action="Index">Show all</a>
-                    </div>
-
-                </form>
-
-            </div>
-        </div>
-
+<header class="page-head">
+    <div class="page-head__text">
+        <h1>Update Skill</h1>
     </div>
+</header>
+
+<div class="sheet">
+        <form asp-action="Edit" class="form">
+            <div asp-validation-summary="ModelOnly" class="form__summary"></div>
+
+            <div class="form__grid">
+                <div class="field">
+                    <label asp-for="SkillName"></label>
+                    <input asp-for="SkillName" />
+                    <span asp-validation-for="SkillName" class="field__error"></span>
+                </div>
+                <div class="field">
+                    <label asp-for="Price"></label>
+                    <input asp-for="Price" type="number" />
+                    <span asp-validation-for="Price" class="field__error"></span>
+                </div>
+                <div class="field">
+                    <label asp-for="StartDate"></label>
+                    <input asp-for="StartDate" type="date" value="@Model.StartDate.ToString("yyyy-MM-dd")" />
+                    <span asp-validation-for="StartDate" class="field__error"></span>
+                </div>
+                <div class="field">
+                    <label asp-for="EndDate"></label>
+                    <input asp-for="EndDate" type="date" value="@Model.EndDate.ToString("yyyy-MM-dd")" />
+                    <span asp-validation-for="EndDate" class="field__error"></span>
+                </div>
+                <div class="field">
+                    <label asp-for="PlatformId"></label>
+                    <select asp-for="PlatformId" asp-items="ViewBag.Platforms"></select>
+                    <span asp-validation-for="PlatformId" class="field__error"></span>
+                </div>
+                <div class="field">
+                    <label asp-for="SkillCategory"></label>
+                    <select asp-for="SkillCategory" asp-items="Html.GetEnumSelectList<Skill_Category>()"></select>
+                    <span asp-validation-for="SkillCategory" class="field__error"></span>
+                </div>
+                <div class="field">
+                    <label asp-for="SkillOrganizerID"></label>
+                    <select asp-for="SkillOrganizerID" asp-items="ViewBag.SkillOrganizers"></select>
+                    <span asp-validation-for="SkillOrganizerID" class="field__error"></span>
+                </div>
+                <div class="field">
+                    <label asp-for="MentorIds"></label>
+                    <select asp-for="MentorIds" asp-items="ViewBag.Mentors" multiple></select>
+                    <span asp-validation-for="MentorIds" class="field__error"></span>
+                </div>
+                <div class="field field--wide">
+                    <label asp-for="Description"></label>
+                    <textarea asp-for="Description"></textarea>
+                    <span asp-validation-for="Description" class="field__error"></span>
+                </div>
+                <div class="field">
+                    <label asp-for="ImageURL"></label>
+                    <input asp-for="ImageURL" />
+                    <span asp-validation-for="ImageURL" class="field__error"></span>
+                </div>
+                <div class="field">
+                    <span class="label">Image preview</span>
+                    <img class="preview" id="ImageUrlPreview" alt="" />
+                </div>
+            </div>
+
+            <div class="form__actions">
+                <input type="submit" value="Update" class="btn btn--primary" />
+                <a class="btn btn--quiet" asp-action="Index">Show all</a>
+            </div>
+        </form>
 </div>
 
 @section Scripts {
