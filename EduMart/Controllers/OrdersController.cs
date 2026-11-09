@@ -66,9 +66,13 @@ namespace EduMart.Controllers
             return RedirectToAction(nameof(ShoppingCart));
         }
 
+        // POST with an antiforgery token, so another site cannot place an order for a signed-in user.
+        // The PayPal payment itself is not verified on the server (see README).
+        [HttpPost]
         public async Task<IActionResult> CompleteOrder()
         {
             var items = _shoppingCart.GetShoppingCartItems();
+            if (items.Count == 0) return RedirectToAction(nameof(ShoppingCart));
             string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             string userEmailAddress = User.FindFirstValue(ClaimTypes.Email);
 

@@ -188,10 +188,20 @@ namespace EduMart.Data
                 // Users
                 var userManager = serviceScope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
                 var logger = serviceScope.ServiceProvider.GetRequiredService<ILogger<AppDbInitializer>>();
-                string adminUserEmail = "admin@gmail.com";
+                var config = serviceScope.ServiceProvider.GetRequiredService<IConfiguration>();
+                var env = serviceScope.ServiceProvider.GetRequiredService<IWebHostEnvironment>();
 
-                var adminUser = await userManager.FindByEmailAsync(adminUserEmail);
-                if (adminUser == null)
+                // The demo passwords are published in the README, so they are only used in Development.
+                // Other environments must set Seed:AdminEmail and Seed:AdminPassword
+                // (e.g. environment variables Seed__AdminEmail / Seed__AdminPassword) and get no sample learners.
+                string? adminUserEmail = config["Seed:AdminEmail"] ?? (env.IsDevelopment() ? "admin@gmail.com" : null);
+                string? adminUserPassword = config["Seed:AdminPassword"] ?? (env.IsDevelopment() ? "Admin@1234" : null);
+
+                if (adminUserEmail == null || adminUserPassword == null)
+                {
+                    logger.LogWarning("No admin account seeded: set Seed:AdminEmail and Seed:AdminPassword to create one.");
+                }
+                else if (await userManager.FindByEmailAsync(adminUserEmail) == null)
                 {
                     var newAdminUser = new ApplicationUser()
                     {
@@ -201,7 +211,7 @@ namespace EduMart.Data
                         EmailConfirmed = true
                     };
                     // Password must satisfy the default Identity policy (uppercase, lowercase, digit, symbol)
-                    var result = await userManager.CreateAsync(newAdminUser, "Admin@1234");
+                    var result = await userManager.CreateAsync(newAdminUser, adminUserPassword);
                     if (result.Succeeded)
                     {
                         await userManager.AddToRoleAsync(newAdminUser, UserRoles.Admin);
@@ -211,6 +221,9 @@ namespace EduMart.Data
                         logger.LogError("Seeding {Email} failed: {Errors}", adminUserEmail, string.Join("; ", result.Errors.Select(e => e.Description)));
                     }
                 }
+
+                // Sample learners share a published password, so they only exist in Development
+                if (!env.IsDevelopment()) return;
 
                 // Sample learners (UserName = email, as the Register action does)
                 foreach (var (fullName, email) in SampleUsers)

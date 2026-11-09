@@ -4,11 +4,14 @@ using Microsoft.EntityFrameworkCore;
 using EduMart.Data.Cart;
 using Microsoft.AspNetCore.Identity;
 using EduMart.Models;
+using Microsoft.AspNetCore.Mvc;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddControllersWithViews();
+// Every POST must carry the antiforgery token that the form tag helper adds (CSRF protection)
+builder.Services.AddControllersWithViews(options =>
+    options.Filters.Add(new AutoValidateAntiforgeryTokenAttribute()));
 
 // Register the DbContext
 builder.Services.AddDbContext<AppDbContext>(options =>

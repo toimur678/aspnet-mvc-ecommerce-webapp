@@ -2,6 +2,7 @@
 using EduMart.Data.Static;
 using EduMart.Data;
 using EduMart.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -21,6 +22,7 @@ namespace EduMart.Controllers
             _context = context;
         }
 
+        [Authorize(Roles = UserRoles.Admin)]
         public async Task<IActionResult> Users()
         {
             var users = await _context.Users.ToListAsync();
@@ -38,17 +40,17 @@ namespace EduMart.Controllers
             var user = await _userManager.FindByEmailAsync(loginVM.EmailAddress);
             if (user != null)
             {
-                var passwordCheck = await _userManager.CheckPasswordAsync(user, loginVM.Password);
-                if (passwordCheck)
+                // lockoutOnFailure: 5 wrong passwords lock the account for 5 minutes (Identity defaults), which stops brute forcing
+                var result = await _signInManager.PasswordSignInAsync(user, loginVM.Password, isPersistent: false, lockoutOnFailure: true);
+                if (result.Succeeded)
                 {
-                    var result = await _signInManager.PasswordSignInAsync(user, loginVM.Password, false, false);
-                    if (result.Succeeded)
-                    {
-                        return RedirectToAction("Index", "Skills");
-                    }
+                    return RedirectToAction("Index", "Skills");
                 }
-                TempData["Error"] = "Wrong credentials. Please, try again!";
-                return View(loginVM);
+                if (result.IsLockedOut)
+                {
+                    TempData["Error"] = "Too many failed attempts. Please try again in a few minutes.";
+                    return View(loginVM);
+                }
             }
 
             TempData["Error"] = "Wrong credentials. Please, try again!";

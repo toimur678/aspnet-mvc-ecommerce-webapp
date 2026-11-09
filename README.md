@@ -70,7 +70,9 @@ toimur678-aspnet-mvc-ecommerce-webapp/
    ```
    Open https://localhost:7215. On first start, `AppDbInitializer.cs` creates the roles and the default users below.
 
-### Default Users
+### Default Users (Development only)
+These accounts are only created when `ASPNETCORE_ENVIRONMENT` is `Development`, because their passwords are public. In any other environment no sample learners are created, and the admin account is only created if you set `Seed__AdminEmail` and `Seed__AdminPassword` as environment variables (or `Seed:AdminEmail` / `Seed:AdminPassword` in another configuration source).
+
 - **Admin User**:
   - Email: `admin@gmail.com`
   - Password: `Admin@1234`
@@ -97,4 +99,4 @@ For any questions or issues, please open an issue on the GitHub repository.
 
 ---
 
-**Note**: This is a sample project for educational purposes. It is not intended for production use without further testing and security enhancements.
+**Note**: This is a sample project for educational purposes. It is not intended for production use without further testing and security enhancements. In particular, checkout uses the PayPal sandbox and the payment is only confirmed in the browser: the server records the order without checking with PayPal that it was paid. A real store must verify the payment server-side (PayPal Orders API) before calling `CompleteOrder`.

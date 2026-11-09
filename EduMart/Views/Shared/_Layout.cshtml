@@ -9,7 +9,7 @@
     <link rel="preconnect" href="https://api.fontshare.com" crossorigin>
     <link href="https://api.fontshare.com/v2/css?f[]=chillax@500,600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
 </head>
 <body>
     @{
@@ -47,7 +47,7 @@
                     </ul>
                 </nav>
 
-                <form class="search" role="search" asp-controller="Skills" asp-action="Filter">
+                <form class="search" role="search" asp-controller="Skills" asp-action="Filter" method="get">
                     <label class="visually-hidden" for="searchString">Search skills</label>
                     <input id="searchString" name="searchString" type="search" placeholder="Search for a skill…" value="@searchValue" autocomplete="off">
                     <button class="search__btn" type="submit">Search</button>

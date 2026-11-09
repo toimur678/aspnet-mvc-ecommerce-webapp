@@ -73,6 +73,7 @@ else
                 Add more items
             </a>
             <div id="paypal-btn"></div>
+            <form id="complete-order" asp-controller="Orders" asp-action="CompleteOrder" method="post" hidden></form>
         </div>
     </div>
 }
@@ -117,8 +118,7 @@ else
             //Execute the payment
             onAuthorize: function (data, actions) {
                 return actions.payment.execute().then(function () {
-                    var url = '@Url.Action("CompleteOrder", "Orders", new { })';
-                    window.location.href = url;
+                    document.getElementById('complete-order').submit();
                 });
             }
 
